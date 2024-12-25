@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-west-2"
+  region = "us-east-1"
 }
 
 # Create VPC
@@ -11,22 +11,22 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-west-2a"
+  availability_zone       = "us-east-1a"
 }
 
 # Create Public Subnet A
 resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.3.0/24"
-  availability_zone       = "us-west-2a"
+  availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 }
 
 # Create Public Subnet B
 resource "aws_subnet" "public_b" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.3.0/24"
-  availability_zone       = "us-west-2b"
+  cidr_block              = "10.0.4.0/24"
+  availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
 }
 
@@ -137,7 +137,7 @@ resource "aws_iam_role_policy" "ec2_policy" {
           "s3:GetObject"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:s3:::your-bucket-name/*"  # Replace with your S3 bucket name
+        Resource = "arn:aws:s3:::theitern2025s3/*"  # Replace with your S3 bucket name
       }
     ]
   })
@@ -152,8 +152,9 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 # Launch Template
 resource "aws_launch_template" "web_lt" {
   name_prefix   = "web-template-"
-  image_id      = "ami-0075013580f6322a1"  # Update with your AMI ID
+  image_id      = "ami-06aa3f7caf3a30282"  # Update with your AMI ID
   instance_type = "t2.micro"
+  key_name = "valKP"
 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
@@ -167,7 +168,7 @@ resource "aws_launch_template" "web_lt" {
 # Auto Scaling Group
 resource "aws_autoscaling_group" "web_asg" {
   desired_capacity     = 1
-  max_size             = 3
+  max_size             = 2
   min_size             = 1
   vpc_zone_identifier  = [aws_subnet.private.id]
 
@@ -199,48 +200,6 @@ resource "aws_autoscaling_policy" "scale_policy" {
     target_value = 80  # This is the target value for both scale-out and scale-in
   }
 }
-# resource "aws_autoscaling_policy" "scale" {
-#   name                   = "scale"
-#   policy_type            = "TargetTrackingScaling"
-#   autoscaling_group_name = aws_autoscaling_group.web_asg.name
-
-#   target_tracking_configuration {
-#     predefined_metric_specification {
-#       predefined_metric_type = "ASGAverageCPUUtilization"
-#     }
-
-#     target_value = 70  # Set a balanced target value
-#   }
-# }
-
-
-# resource "aws_autoscaling_policy" "scale_out" {
-#   name                   = "scale_out"
-#   policy_type            = "TargetTrackingScaling"
-#   autoscaling_group_name = aws_autoscaling_group.web_asg.name
-
-#   target_tracking_configuration {
-#     predefined_metric_specification {
-#       predefined_metric_type = "ALBRequestCountPerTarget"
-#     }
-
-#     target_value = 80
-#   }
-# }
-
-# resource "aws_autoscaling_policy" "scale_in" {
-#   name                   = "scale_in"
-#   policy_type            = "TargetTrackingScaling"
-#   autoscaling_group_name = aws_autoscaling_group.web_asg.name
-
-#   target_tracking_configuration {
-#     predefined_metric_specification {
-#       predefined_metric_type = "ASGAverageCPUUtilization"
-#     }
-
-#     target_value = 60
-#   }
-# }
 
 
 

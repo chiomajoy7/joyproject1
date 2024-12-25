@@ -1,9 +1,21 @@
-terraform {
-  cloud {
-    organization = "InovationtechCorpo"
+# terraform {
+#   cloud {
+#     organization = "InovationtechCorpo"
 
-    workspaces {
-      name = "Classwork"
-    }
-  }
+#     workspaces {
+#       name = "Classwork"
+#     }
+#   }
+# }
+
+
+terraform { 
+  cloud { 
+    
+    organization = "raycloudOrganization" 
+
+    workspaces { 
+      name = "theItern01" 
+    } 
+  } 
 }
